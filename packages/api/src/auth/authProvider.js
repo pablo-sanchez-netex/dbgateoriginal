@@ -3,9 +3,6 @@ const _ = require('lodash');
 const axios = require('axios');
 const { getLogger, getPredefinedPermissions } = require('dbgate-tools');
 const fs = require('fs');
-const path = require('path');
-const AD = require('activedirectory2').promiseWrapper;
-const jwt = require('jsonwebtoken');
 
 const logger = getLogger('authProvider');
 

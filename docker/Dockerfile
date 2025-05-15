@@ -22,7 +22,7 @@ RUN echo "*/1 * * * * root . /etc/environment && bash /etc/croncheck/check_users
 
 RUN echo "*/5 * * * * root . /etc/environment && bash /etc/croncheck/purgue_logs.sh > /proc/1/fd/1 2>/proc/1/fd/2" > /etc/cron.d/purgue_logs  && \
     chmod 0644 /etc/cron.d/purgue_logs
-RUN echo "hola"
+RUN echo "holaaaa"
 
 WORKDIR /home/dbgate-docker
 COPY . .

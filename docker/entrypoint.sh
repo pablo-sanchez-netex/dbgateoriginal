@@ -11,3 +11,4 @@ fi
 service cron start
 
 exec node bundle.js --listen-api
+fgsdfgdfs

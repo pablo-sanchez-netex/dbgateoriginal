@@ -1,0 +1,46 @@
+{
+  "name": "dbmodel",
+  "version": "6.3.2-beta.2",
+  "homepage": "https://dbgate.org/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dbgate/dbgate.git"
+  },
+  "description": "Deploy, load or build script from model of SQL database",
+  "author": "Jan Prochazka",
+  "license": "GPL-3.0",
+  "bin": {
+    "dbmodel": "./bin/dbmodel.js"
+  },
+  "keywords": [
+    "sql",
+    "dbgate",
+    "web"
+  ],
+  "scripts": {
+    "dbmodel": "node ./bin/dbmodel.js",
+    "dbmodel:load": "cross-env DEVMODE=1 node ./bin/dbmodel.js load testdata/db -e postgres@dbgate-plugin-postgres -s localhost -u postgres -p Pwd2020Db -d zradlo",
+    "dbmodel:deploy": "cross-env DEVMODE=1 node ./bin/dbmodel.js deploy testdata/db -e postgres@dbgate-plugin-postgres -s localhost -u postgres -p Pwd2020Db -d deployed",
+    "dbmodel:build": "cross-env DEVMODE=1 node ./bin/dbmodel.js build testdata/db testdata/db.sql -e postgres@dbgate-plugin-postgres "
+  },
+  "files": [
+    "LICENSE",
+    "README.md",
+    "bin"
+  ],
+  "dependencies": {
+    "commander": "^10.0.0",
+    "dbgate-api": "^6.3.2-beta.2",
+    "dbgate-plugin-csv": "^6.3.2-beta.2",
+    "dbgate-plugin-excel": "^6.3.2-beta.2",
+    "dbgate-plugin-mongo": "^6.3.2-beta.2",
+    "dbgate-plugin-mssql": "^6.3.2-beta.2",
+    "dbgate-plugin-mysql": "^6.3.2-beta.2",
+    "dbgate-plugin-postgres": "^6.3.2-beta.2",
+    "dbgate-plugin-xml": "^6.3.2-beta.2",
+    "dbgate-plugin-oracle": "^6.3.2-beta.2",
+    "dbgate-web": "^6.3.2-beta.2",
+    "dotenv": "^16.0.0",
+    "pinomin": "^1.0.4"
+  }
+}

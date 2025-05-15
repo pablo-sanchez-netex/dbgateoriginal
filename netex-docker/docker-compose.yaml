@@ -1,0 +1,123 @@
+version: '3.8'
+
+services:
+  ldap:
+    image: osixia/openldap:latest
+    container_name: ldap-test
+    environment:
+      - LDAP_ORGANISATION=miorg
+      - LDAP_DOMAIN=ldap.local
+      - LDAP_ADMIN_PASSWORD=admin123
+    ports:
+      - "3890:389"
+    networks:
+      - ldap-network
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-test
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: testdb
+      MYSQL_USER: testuser
+      MYSQL_PASSWORD: testpass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./mysql-init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ldap-network
+
+  mongodb:
+    image: mongo:6.0
+    container_name: mongodb-test
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: rootpassword
+      MONGO_INITDB_DATABASE: testdb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/init.js
+    networks:
+      - ldap-network
+
+  redis:
+    image: redis:latest
+    container_name: redis-test
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --requirepass redispassword --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "redispassword", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ldap-network
+
+  dbgate:
+    image: dbgate-moded-dbgate
+    container_name: dbgate-test
+    ports:
+      - "3000:3000"
+    environment:
+      # Configuración de autenticación LDAP
+      AD_URL: ldap://ldap-test:389
+      AD_BASEDN: dc=ldap,dc=local
+      AD_USERNAME: cn=admin,dc=ldap,dc=local
+      AD_PASSWORD: admin123
+
+      # Configuración de conexión a MySQL
+      CONNECTIONS: mysql,mongodb,redis
+      
+      # MySQL config
+      LABEL_mysql: MySQL Localhost
+      SERVER_mysql: mysql-test
+      USER_mysql: root
+      PASSWORD_mysql: rootpassword
+      PORT_mysql: 3306
+      ENGINE_mysql: mysql@dbgate-plugin-mysql
+      
+      # MongoDB config
+      LABEL_mongodb: MongoDB Localhost
+      SERVER_mongodb: mongodb-test
+      USER_mongodb: root
+      PASSWORD_mongodb: rootpassword
+      PORT_mongodb: 27017
+      ENGINE_mongodb: mongo@dbgate-plugin-mongo
+      
+      # Redis config
+      LABEL_redis: Redis Localhost
+      SERVER_redis: redis-test
+      PASSWORD_redis: redispassword
+      PORT_redis: 6379
+      ENGINE_redis: redis@dbgate-plugin-redis
+      # TYPE_redis: redis
+      
+    depends_on:
+      mysql:
+        condition: service_healthy
+      mongodb:
+        condition: service_started
+      redis:
+        condition: service_started
+    networks:
+      - ldap-network
+
+volumes:
+  mysql-data:
+  mongo-data:
+  redis-data:
+
+networks:
+  ldap-network:

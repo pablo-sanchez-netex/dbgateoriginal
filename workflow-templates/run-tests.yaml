@@ -1,0 +1,124 @@
+name: Integration and unit tests
+
+on:
+  push:
+    branches:
+      - master
+      - develop
+      - 'feature/**'
+      - hotfix/**
+
+jobs:
+  all-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 18.x
+
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+
+      - name: yarn install
+        run: |
+          yarn install
+
+      - name: Integration tests
+        run: |
+          cd integration-tests
+          yarn test:ci
+
+      - name: Filter parser tests
+        if: always()
+        run: |
+          cd packages/filterparser
+          yarn test:ci
+
+      - name: Datalib (perspective) tests
+        if: always()
+        run: |
+          cd packages/datalib
+          yarn test:ci
+
+      - name: Tools tests
+        if: always()
+        run: |
+          cd packages/tools
+          yarn test:ci
+
+      - uses: tanmen/jest-reporter@v1
+        if: always()
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          result-file: integration-tests/result.json
+          action-name: Integration tests
+
+      - uses: tanmen/jest-reporter@v1
+        if: always()
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          result-file: packages/filterparser/result.json
+          action-name: Filter parser test results
+
+      - uses: tanmen/jest-reporter@v1
+        if: always()
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          result-file: packages/datalib/result.json
+          action-name: Datalib (perspectives) test results
+
+    services:
+      postgres-integr:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: Pwd2020Db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 15000:5432          
+
+      mysql-integr:
+        image: mysql:8.0.18
+        env:
+          MYSQL_ROOT_PASSWORD: Pwd2020Db
+        ports: 
+          - 15001:3306
+
+      mssql-integr:
+        image: mcr.microsoft.com/mssql/server
+        env:
+          ACCEPT_EULA: Y
+          SA_PASSWORD: Pwd2020Db
+          MSSQL_PID: Express
+        ports: 
+          - 15002:1433
+
+      clickhouse-integr:
+        image: bitnami/clickhouse:24.8.4
+        env:
+          CLICKHOUSE_ADMIN_PASSWORD: Pwd2020Db
+        ports: 
+          - 15005:8123
+
+      oracle-integr:
+        image: gvenzl/oracle-xe:21-slim
+        env:
+          ORACLE_PASSWORD: Pwd2020Db
+        ports:
+          - 15006:1521
+
+      cassandradb:
+        image: cassandra:5.0.2
+        ports:
+          - 15942:9042
+
+      libsql:
+        image: ghcr.io/tursodatabase/libsql-server:latest
+        ports:
+          - '8080:8080'

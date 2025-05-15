@@ -1,0 +1,68 @@
+version: '3'
+services:
+  postgres:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: Pwd2020Db
+    ports: 
+      - 16000:5432
+
+  mariadb:
+    image: mariadb
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    ports: 
+      - 16004:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=Pwd2020Db
+
+  mysql-ssh-login:
+    build: containers/mysql-ssh-login
+    restart: always
+    ports: 
+      - 16005:3306
+      - "16015:22"
+
+  mysql-ssh-keyfile:
+    build: containers/mysql-ssh-keyfile
+    restart: always
+    ports: 
+      - 16007:3306
+      - "16008:22"
+
+  dex:
+    build: containers/dex
+    ports:
+      - "16009:5556"
+
+  mongo:
+    image: mongo:4.0.12
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: Pwd2020Db
+    ports:
+      - 16010:27017
+
+  redis:
+    image: redis
+    ports:
+      - 16011:6379
+
+  mssql:
+    image: mcr.microsoft.com/mssql/server
+    restart: always
+    ports:
+      - 16014:1433
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Pwd2020Db
+      - MSSQL_PID=Express
+
+  oracle:
+    image: gvenzl/oracle-xe:21-slim
+    environment:
+      ORACLE_PASSWORD: Pwd2020Db
+    ports:
+      - 16013:1521

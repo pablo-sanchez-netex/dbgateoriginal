@@ -1,0 +1,21 @@
+_module: true
+
+checkout-and-merge-pro:
+  - name: Checkout dbgate/dbgate-pro
+    uses: actions/checkout@v2
+    with:
+      repository: dbgate/dbgate-pro
+      token: ${{ secrets.GH_TOKEN }}
+      path: dbgate-pro
+      ref: 5cc577af44faaf6ec61cff778cae6fbe35a6c510
+  - name: Merge dbgate/dbgate-pro
+    run: |
+      mkdir ../dbgate-pro
+      mv dbgate-pro/* ../dbgate-pro/
+      cd ..
+      mkdir dbgate-merged
+      cd dbgate-pro
+      cd sync
+      yarn
+      node sync.js --nowatch
+      cd ..

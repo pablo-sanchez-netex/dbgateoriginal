@@ -1,0 +1,58 @@
+name: Update Workflows
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - "workflow-templates/**"
+
+jobs:
+  update-workflows:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.WORKFLOW_CHANGE_ACCESS_TOKEN }}
+          
+      - name: git pull
+        run: |
+          git pull
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: |
+          rm package.json
+          rm yarn.lock
+          yarn add -W js-yaml lodash
+
+      - name: Run workflow generation
+        run: |
+          node common/processWorkflows.js
+
+      - name: Git config
+        run: |
+          git config --global user.email "info@dbgate.io"
+          git config --global user.name "CI workflows"          
+
+      - name: Commit changes
+        run: |
+          # Only commit if there are changes
+          if [[ -n "$(git status --porcelain)" ]]; then
+            git add .github/workflows
+            git commit -m "chore: auto-update github workflows"
+          else
+            echo "No changes to commit"
+          fi
+
+      - name: Push changes
+        uses: ad-m/github-push-action@v0.6.0
+        with:
+          github_token: ${{ secrets.WORKFLOW_CHANGE_ACCESS_TOKEN }}
+          branch: master

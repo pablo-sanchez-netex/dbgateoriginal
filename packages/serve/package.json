@@ -1,0 +1,36 @@
+{
+  "name": "dbgate-serve",
+  "version": "6.3.2-beta.2",
+  "homepage": "https://dbgate.org/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dbgate/dbgate.git"
+  },
+  "description": "Opensource database administration tool - web interface",
+  "author": "Jan Prochazka",
+  "license": "GPL-3.0",
+  "bin": {
+    "dbgate-serve": "./bin/dbgate-serve.js"
+  },
+  "keywords": [
+    "sql",
+    "dbgate",
+    "web"
+  ],
+  "dependencies": {
+    "dbgate-api": "^6.3.2-beta.2",
+    "dbgate-plugin-clickhouse": "^6.3.2-beta.2",
+    "dbgate-plugin-csv": "^6.3.2-beta.2",
+    "dbgate-plugin-excel": "^6.3.2-beta.2",
+    "dbgate-plugin-mongo": "^6.3.2-beta.2",
+    "dbgate-plugin-mssql": "^6.3.2-beta.2",
+    "dbgate-plugin-mysql": "^6.3.2-beta.2",
+    "dbgate-plugin-oracle": "^6.3.2-beta.2",
+    "dbgate-plugin-postgres": "^6.3.2-beta.2",
+    "dbgate-plugin-redis": "^6.3.2-beta.2",
+    "dbgate-plugin-sqlite": "^6.3.2-beta.2",
+    "dbgate-plugin-xml": "^6.3.2-beta.2",
+    "dbgate-web": "^6.3.2-beta.2",
+    "dotenv": "^16.0.0"
+  }
+}

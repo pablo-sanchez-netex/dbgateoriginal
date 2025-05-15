@@ -1,0 +1,153 @@
+{
+  "name": "dbgate",
+  "version": "6.3.2-beta.2",
+  "private": true,
+  "author": "Jan Prochazka <jenasoft.database@gmail.com>",
+  "description": "Opensource database administration tool",
+  "dependencies": {
+    "electron-log": "^4.4.1",
+    "electron-updater": "^6.3.4",
+    "jsonwebtoken": "^9.0.2",
+    "lodash.clonedeepwith": "^4.5.0",
+    "patch-package": "^6.4.7",
+    "@clickhouse/client": "^1.5.0",
+    "bson": "^6.8.0",
+    "mongodb": "^6.3.0",
+    "tedious": "^18.2.0",
+    "mysql2": "^3.11.3",
+    "wkx": "^0.5.0",
+    "pg-copy-streams": "^6.0.6",
+    "pg": "^8.11.5",
+    "ioredis": "^5.4.1",
+    "node-redis-dump2": "^0.5.0",
+    "@aws-sdk/rds-signer": "^3.665.0",
+    "activedirectory2": "^2.1.0",
+    "axios": "^0.21.1",
+    "ssh2": "^1.16.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dbgate/dbgate.git"
+  },
+  "build": {
+    "artifactName": "dbgate-${version}-${os}_${arch}.${ext}",
+    "appId": "org.dbgate",
+    "productName": "DbGate",
+    "asarUnpack": "**/*.node",
+    "mac": {
+      "category": "database",
+      "icon": "icon512-mac.png",
+      "hardenedRuntime": true,
+      "entitlements": "entitlements.mac.plist",
+      "entitlementsInherit": "entitlements.mac.plist",
+      "publish": [
+        {
+          "provider": "github",
+          "owner": "dbgate",
+          "repo": "dbgate"
+        }
+      ],
+      "target": {
+        "target": "default",
+        "arch": [
+          "universal",
+          "x64",
+          "arm64"
+        ]
+      },
+      "notarize": true
+    },
+    "linux": {
+      "target": [
+        "deb",
+        "snap",
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        },
+        "tar.gz"
+      ],
+      "icon": "icons/",
+      "category": "Development",
+      "synopsis": "Database manager for SQL Server, MySQL, PostgreSQL, MongoDB and SQLite",
+      "publish": [
+        {
+          "provider": "github",
+          "owner": "dbgate",
+          "repo": "dbgate"
+        }
+      ]
+    },
+    "appImage": {
+      "license": "./LICENSE",
+      "category": "Development"
+    },
+    "snap": {
+      "publish": [
+        "github",
+        "snapStore"
+      ],
+      "environment": {
+        "ELECTRON_SNAP": "true"
+      }
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
+      "icon": "icon.ico",
+      "publish": [
+        {
+          "provider": "github",
+          "owner": "dbgate",
+          "repo": "dbgate"
+        }
+      ]
+    },
+    "files": [
+      "packages",
+      "src",
+      "icon.png",
+      "!node_modules/cpu-features/build/**"
+    ]
+  },
+  "homepage": "./",
+  "scripts": {
+    "start": "cross-env ELECTRON_START_URL=http://localhost:5001 DEVMODE=1 electron .",
+    "start:local": "cross-env electron .",
+    "dist": "electron-builder",
+    "build": "cd ../packages/api && yarn build && cd ../web && yarn build && cd ../../app && yarn dist",
+    "build:local": "cd ../packages/api && yarn build && cd ../web && yarn build && cd ../../app && yarn predist",
+    "postinstall": "yarn rebuild && patch-package",
+    "rebuild": "electron-builder install-app-deps",
+    "predist": "copyfiles ../packages/api/dist/* packages && copyfiles \"../packages/web/public/*\" packages && copyfiles \"../packages/web/public/**/*\" packages && copyfiles --up 3 \"../plugins/dist/**/*\" packages/plugins"
+  },
+  "main": "src/electron.js",
+  "devDependencies": {
+    "copyfiles": "^2.2.0",
+    "cross-env": "^6.0.3",
+    "electron": "30.0.2",
+    "electron-builder": "25.1.8"
+  },
+  "optionalDependencies": {
+    "oracledb": "^6.6.0",
+    "libsql": "0.5.0-pre.6",
+    "better-sqlite3": "11.8.1"
+  }
+}

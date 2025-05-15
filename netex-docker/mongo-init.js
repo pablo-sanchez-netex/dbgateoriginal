@@ -14,6 +14,7 @@ db.usuarios.insertMany([
         email: "usuario@example.com",
         roles: ["user"],
         fechaRegistro: new Date()
+        fdasfadfasfdasdf
     }
 ]);
 
